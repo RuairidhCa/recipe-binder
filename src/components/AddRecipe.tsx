@@ -1,7 +1,9 @@
 import React from "react";
+import { v4 as uuidv4 } from "uuid";
+
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Container, Box, Button, Textarea } from "@chakra-ui/react";
+import { Button, Textarea } from "@chakra-ui/react";
 import { Recipe } from "../types/recipe";
 
 interface IAddRecipeProps {
@@ -14,6 +16,7 @@ function AddRecipe({ onSubmit }: IAddRecipeProps) {
     const { title, description, ingredients, method } = event.target.elements;
 
     onSubmit({
+      id: uuidv4(),
       title: title.value,
       description: description.value,
       ingredients: ingredients.value.split(/\r?\n/),

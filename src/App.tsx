@@ -39,6 +39,13 @@ function App() {
     onClose();
   }
 
+  function deleteRecipe(recipeIdToDelete: string) {
+    const filteredRecipes = recipes.filter(
+      (recipe: RecipeType) => recipe.id !== recipeIdToDelete
+    );
+    setRecipes(filteredRecipes);
+  }
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Container
@@ -59,7 +66,7 @@ function App() {
         gap={3}
       >
         {recipes.map((recipe: any) => (
-          <RecipeCard {...recipe} />
+          <RecipeCard {...recipe} deleteRecipe={deleteRecipe} />
         ))}
       </Grid>
 

@@ -1,26 +1,45 @@
 import React from "react";
 
-import { Box, Image, Heading, Text } from "@chakra-ui/react";
-import { Recipe as RecipeType } from "../types/recipe";
+import { Box, Image, Heading, Text, IconButton } from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 import ImgPlaceholderSvg from "../assets/img_placeholder.svg";
 
-function RecipeCard({ title, description, ingredients, method }: RecipeType) {
+interface IRecipeCardProps {
+  id: string;
+  title: string;
+  description: string;
+  deleteRecipe: (id: string) => void;
+}
+
+function RecipeCard({
+  id,
+  title,
+  description,
+  deleteRecipe,
+}: IRecipeCardProps) {
   return (
     <Box boxShadow="base" rounded="md">
       <Box>
         <Image src={ImgPlaceholderSvg} alt="placeholder image" />
       </Box>
-      <Box>
-        <Heading size="md" noOfLines={1}>
-          {title}{" "}
+      <Box m="2">
+        <Heading size="md" mb="3" noOfLines={1}>
+          {title}
         </Heading>
-      </Box>
-      <Box>
-        <Text color="gray.500" noOfLines={3}>
+        <Text color="gray.500" noOfLines={2}>
           {description}
         </Text>
       </Box>
+      <IconButton
+        variant="ghost"
+        colorScheme="red"
+        aria-label="Delete recipe"
+        icon={<DeleteIcon />}
+        onClick={() => {
+          deleteRecipe(id);
+        }}
+      />
     </Box>
   );
 }
