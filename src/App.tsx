@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 import {
+  Container,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  Button,
   useDisclosure,
-  Container,
-  Grid,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Recipe from "./components/Recipe";
-import RecipeCard from "./components/RecipeCard";
+import Recipe from "components/Recipe";
+import AddRecipe from "components/AddRecipe";
+import Recipes from "pages/Recipes";
 import { Recipe as RecipeType } from "./types/recipe";
-import AddRecipe from "./components/AddRecipe";
+
+export const RecipeContext = createContext<any>(null);
 
 function App() {
   const [recipes, setRecipes] = useState<any>([]);
-
+  const value = { recipes, setRecipes };
   useEffect(() => {
     const recipeState = localStorage.getItem("recipes");
 
@@ -45,41 +45,41 @@ function App() {
     );
     setRecipes(filteredRecipes);
   }
+  const testProps = {
+    id: "1234",
+    title: "test",
+    description: "test",
+    ingredients: ["test"],
+    method: ["test"],
+  };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <Container
       maxW={{ sm: "container.sm", md: "container.md", lg: "container.lg" }}
-      centerContent
     >
-      <Button
-        size="lg"
-        leftIcon={<AddIcon />}
-        onClick={onOpen}
-        colorScheme="blue"
-      >
-        New Recipe
-      </Button>
-      <Grid
-        templateColumns="repeat(auto-fit, minmax(300px, 1fr))"
-        w="100%"
-        gap={3}
-      >
-        {recipes.map((recipe: any) => (
-          <RecipeCard {...recipe} deleteRecipe={deleteRecipe} />
-        ))}
-      </Grid>
+      <RecipeContext.Provider value={value}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Recipes />} />
+            <Route
+              path="/recipes/:recipeId"
+              element={<Recipe {...testProps} />}
+            />
+          </Routes>
+        </Router>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Add new recipe</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <AddRecipe onSubmit={saveRecipe} />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add new recipe</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <AddRecipe onSubmit={saveRecipe} />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      </RecipeContext.Provider>
     </Container>
   );
 }
