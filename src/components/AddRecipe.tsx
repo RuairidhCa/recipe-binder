@@ -13,14 +13,13 @@ function AddRecipe({ onSubmit }: IAddRecipeProps) {
   function handleSubmit(event: any) {
     event.preventDefault();
 
-    const { title, description, ingredients, method } = event.target.elements;
+    const { title, url, tags } = event.target.elements;
 
     onSubmit({
       id: uuidv4(),
       title: title.value,
-      description: description.value,
-      ingredients: ingredients.value.split(/\r?\n/),
-      method: method.value.split(/\r?\n/),
+      url: url.value,
+      tags: tags.value.split(/\r?\n/),
     });
   }
 
@@ -30,18 +29,15 @@ function AddRecipe({ onSubmit }: IAddRecipeProps) {
         <FormLabel>Title</FormLabel>
         <Input placeholder="Recipe Title" />
       </FormControl>
-      <FormControl id="description">
-        <FormLabel>Description</FormLabel>
+      <FormControl id="url">
+        <FormLabel>URL</FormLabel>
         <Input placeholder="Optional" />
       </FormControl>
-      <FormControl id="ingredients" isRequired>
-        <FormLabel>Ingredients</FormLabel>
+      <FormControl id="tags" isRequired>
+        <FormLabel>Tags</FormLabel>
         <Textarea />
       </FormControl>
-      <FormControl id="method" isRequired mt="1">
-        <FormLabel>Method</FormLabel>
-        <Textarea />
-      </FormControl>
+
       <Button colorScheme="blue" type="submit" mt="3">
         Save
       </Button>

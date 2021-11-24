@@ -1,7 +1,6 @@
 export type Recipe = {
   id: string;
   title: string;
-  description: string | null;
-  ingredients: string[];
-  method: string[];
+  url: string | null;
+  tags: string[];
 };

@@ -18,7 +18,7 @@ import { Link, useParams } from "react-router-dom";
 
 import ImgPlaceholderSvg from "../assets/img_placeholder.svg";
 
-function Recipe({ title, description, ingredients, method }: RecipeType) {
+function Recipe({ title, url, tags }: RecipeType) {
   const { recipes } = useContext(RecipeContext);
 
   const { recipeId } = useParams();
@@ -56,7 +56,7 @@ function Recipe({ title, description, ingredients, method }: RecipeType) {
             <Heading size="lg" py={10}>
               {recipe.title}
             </Heading>
-            {description ? <Text>{recipe.description}</Text> : null}
+            {url ? <Text>{recipe.url}</Text> : null}
             <Box py={10}>
               <IconButton
                 variant="ghost"
@@ -70,21 +70,10 @@ function Recipe({ title, description, ingredients, method }: RecipeType) {
         </Box>
         <Box py={5}>
           <Heading as="h3" size="md">
-            Ingredients
+            tags
           </Heading>
           <List>
-            {recipe.ingredients.map((li: string) => (
-              <ListItem>{li}</ListItem>
-            ))}
-          </List>
-        </Box>
-
-        <Box py={5}>
-          <Heading as="h3" size="md">
-            Method
-          </Heading>
-          <List>
-            {recipe.method.map((li: string) => (
+            {recipe.tags.map((li: string) => (
               <ListItem>{li}</ListItem>
             ))}
           </List>

@@ -9,28 +9,23 @@ import { Link } from "react-router-dom";
 interface IRecipeCardProps {
   id: string;
   title: string;
-  description: string;
+  url: string;
   deleteRecipe: (id: string) => void;
 }
 
-function RecipeCard({
-  id,
-  title,
-  description,
-  deleteRecipe,
-}: IRecipeCardProps) {
+function RecipeCard({ id, title, url, deleteRecipe }: IRecipeCardProps) {
   return (
     <Box boxShadow="base" rounded="md">
       <Link to={`/recipes/${id}`}>
-        <Box>
+        {/* <Box>
           <Image src={ImgPlaceholderSvg} alt="placeholder image" />
-        </Box>
+        </Box> */}
         <Box m="2">
           <Heading size="md" mb="3" noOfLines={1}>
             {title}
           </Heading>
           <Text color="gray.500" noOfLines={2}>
-            {description}
+            {url}
           </Text>
         </Box>
       </Link>
