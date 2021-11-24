@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 
 import {
   Modal,
@@ -9,36 +9,15 @@ import {
   ModalCloseButton,
   Button,
   useDisclosure,
-  SimpleGrid,
+  VStack,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
 import RecipeCard from "components/RecipeCard";
-import { Recipe as RecipeType } from "types/recipe";
-import AddRecipe from "components/AddRecipe";
+import RecipeForm from "components/RecipeForm";
 import { RecipeContext } from "App";
 function Recipes() {
-  const { recipes, setRecipes } = useContext(RecipeContext);
-
-  useEffect(() => {
-    const recipeState = localStorage.getItem("recipes");
-
-    if (recipeState) {
-      setRecipes(JSON.parse(recipeState));
-    }
-  }, [setRecipes]);
-
-  function saveRecipe(recipe: RecipeType) {
-    setRecipes([...recipes, recipe]);
-    onClose();
-  }
-
-  function deleteRecipe(recipeIdToDelete: string) {
-    const filteredRecipes = recipes.filter(
-      (recipe: RecipeType) => recipe.id !== recipeIdToDelete
-    );
-    setRecipes(filteredRecipes);
-  }
+  const { recipes } = useContext(RecipeContext);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
@@ -52,11 +31,11 @@ function Recipes() {
         New Recipe
       </Button>
 
-      <SimpleGrid minChildWidth="200px" spacing={3}>
+      <VStack align="stretch">
         {recipes.map((recipe: any) => (
-          <RecipeCard {...recipe} deleteRecipe={deleteRecipe} />
+          <RecipeCard key={recipe.id} {...recipe} />
         ))}
-      </SimpleGrid>
+      </VStack>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -64,7 +43,7 @@ function Recipes() {
           <ModalHeader>Add new recipe</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <AddRecipe onSubmit={saveRecipe} />
+            <RecipeForm onClose={onClose} />
           </ModalBody>
         </ModalContent>
       </Modal>
