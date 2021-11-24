@@ -10,6 +10,8 @@ export const RecipeContext = createContext<any>(null);
 
 function App() {
   const [recipes, setRecipes] = useState<any>([]);
+
+  const value = { recipes, setRecipes };
   useEffect(() => {
     const recipeState = localStorage.getItem("recipes");
 
@@ -33,15 +35,17 @@ function App() {
     <Container
       maxW={{ sm: "container.sm", md: "container.md", lg: "container.lg" }}
     >
-      <Router>
-        <Routes>
-          <Route path="/" element={<Recipes />} />
-          <Route
-            path="/recipes/:recipeId"
-            element={<Recipe {...testProps} />}
-          />
-        </Routes>
-      </Router>
+      <RecipeContext.Provider value={value}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Recipes />} />
+            <Route
+              path="/recipes/:recipeId"
+              element={<Recipe {...testProps} />}
+            />
+          </Routes>
+        </Router>
+      </RecipeContext.Provider>
     </Container>
   );
 }
