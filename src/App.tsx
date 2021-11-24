@@ -1,6 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
 
-import { Container } from "@chakra-ui/react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Recipe from "components/Recipe";
@@ -32,21 +31,17 @@ function App() {
   };
 
   return (
-    <Container
-      maxW={{ sm: "container.sm", md: "container.md", lg: "container.lg" }}
-    >
-      <RecipeContext.Provider value={value}>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Recipes />} />
-            <Route
-              path="/recipes/:recipeId"
-              element={<Recipe {...testProps} />}
-            />
-          </Routes>
-        </Router>
-      </RecipeContext.Provider>
-    </Container>
+    <RecipeContext.Provider value={value}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Recipes />} />
+          <Route
+            path="/recipes/:recipeId"
+            element={<Recipe {...testProps} />}
+          />
+        </Routes>
+      </Router>
+    </RecipeContext.Provider>
   );
 }
 

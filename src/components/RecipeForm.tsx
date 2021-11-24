@@ -56,11 +56,14 @@ function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
         <FormLabel>Title</FormLabel>
         <Input placeholder="Recipe Title" defaultValue={recipe?.title} />
       </FormControl>
-      <FormControl id="url">
+      <FormControl id="url" isRequired>
         <FormLabel>URL</FormLabel>
-        <Input placeholder="Optional" defaultValue={recipe?.url || undefined} />
+        <Input
+          placeholder="Link to Recipe"
+          defaultValue={recipe?.url || undefined}
+        />
       </FormControl>
-      <FormControl id="tags" isRequired>
+      <FormControl id="tags">
         <FormLabel>Tags</FormLabel>
         <Textarea defaultValue={recipe?.tags.join("\r\n")} />
       </FormControl>
