@@ -1,12 +1,11 @@
 import React, { useContext } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
 import { Button, Textarea } from "@chakra-ui/react";
 import { Recipe } from "../types/recipe";
 import { RecipeContext } from "App";
-import { fetchRecipes } from "../utils/utils";
+import { fetchRecipes, prepareTags } from "../utils/utils";
 interface IRecipeFormProps {
   onClose: () => void;
   recipe?: Recipe;
@@ -14,49 +13,29 @@ interface IRecipeFormProps {
 function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
   const { setRecipes } = useContext(RecipeContext);
 
-  async function saveRecipe(recipe: Recipe) {
-    await fetch("/api/recipes", {
-      method: "POST",
+  async function saveOrEditRecipe(recipe: Recipe) {
+    const path = recipe.id ? `/${recipe.id}` : "";
+    await fetch(`/api/recipes${path}`, {
+      method: recipe.id ? "PUT" : "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(recipe),
     });
-    setRecipes(await fetchRecipes());
-  }
-
-  async function editRecipe(editedRecipe: Recipe) {
-    await fetch(`/api/recipes/${editedRecipe.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(editedRecipe),
-    });
 
     setRecipes(await fetchRecipes());
   }
-
   function handleSubmit(event: any) {
     event.preventDefault();
 
     const { title, url, tags } = event.target.elements;
-    if (recipe?.id) {
-      editRecipe({
-        id: recipe.id,
-        title: title.value,
-        url: url.value,
-        tags: tags.value.split(/[,\r\n]/),
-      });
-    } else {
-      saveRecipe({
-        id: uuidv4(),
-        title: title.value,
-        url: url.value,
-        tags: tags.value.split(/[,\r\n]/),
-      });
-    }
 
+    saveOrEditRecipe({
+      id: recipe?.id,
+      title: title.value,
+      url: url.value,
+      tags: prepareTags(tags.value),
+    });
     onClose();
   }
 
