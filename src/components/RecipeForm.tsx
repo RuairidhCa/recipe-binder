@@ -6,25 +6,35 @@ import { Input } from "@chakra-ui/input";
 import { Button, Textarea } from "@chakra-ui/react";
 import { Recipe } from "../types/recipe";
 import { RecipeContext } from "App";
-
+import { fetchRecipes } from "../utils/utils";
 interface IRecipeFormProps {
   onClose: () => void;
   recipe?: Recipe;
 }
 function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
-  const { recipes, setRecipes } = useContext(RecipeContext);
+  const { setRecipes } = useContext(RecipeContext);
 
-  function saveRecipe(recipe: Recipe) {
-    setRecipes([...recipes, recipe]);
+  async function saveRecipe(recipe: Recipe) {
+    await fetch("/api/recipes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(recipe),
+    });
+    setRecipes(await fetchRecipes());
   }
 
-  function editRecipe(editedRecipe: Recipe) {
-    const editedRecipeIndex = recipes.findIndex(
-      (recipe: Recipe) => recipe.id === editedRecipe.id
-    );
-    const updatedRecipes = recipes;
-    updatedRecipes[editedRecipeIndex] = editedRecipe;
-    setRecipes([...updatedRecipes]);
+  async function editRecipe(editedRecipe: Recipe) {
+    await fetch(`/api/recipes/${editedRecipe.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(editedRecipe),
+    });
+
+    setRecipes(await fetchRecipes());
   }
 
   function handleSubmit(event: any) {

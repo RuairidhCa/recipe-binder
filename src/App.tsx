@@ -2,8 +2,8 @@ import React, { createContext, useEffect, useState } from "react";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Recipe from "components/Recipe";
 import Recipes from "pages/Recipes";
+import { fetchRecipes } from "utils/utils";
 
 export const RecipeContext = createContext<any>(null);
 
@@ -12,11 +12,10 @@ function App() {
 
   const value = { recipes, setRecipes };
   useEffect(() => {
-    const recipeState = localStorage.getItem("recipes");
-
-    if (recipeState) {
-      setRecipes(JSON.parse(recipeState));
+    async function appLoad() {
+      setRecipes(await fetchRecipes());
     }
+    appLoad();
   }, []);
 
   useEffect(() => {
@@ -35,10 +34,10 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Recipes />} />
-          <Route
+          {/* <Route
             path="/recipes/:recipeId"
             element={<Recipe {...testProps} />}
-          />
+          /> */}
         </Routes>
       </Router>
     </RecipeContext.Provider>

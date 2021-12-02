@@ -15,13 +15,22 @@ class Recipe(db.Model):
     url = db.Column(db.Text)
     tags = db.relationship("Tag", secondary=TAGS, backref="recipes")
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "url": self.url,
+            "tags": self.recipe_tags,
+        }
+
     @property
     def recipe_tags(self):
         """
         Returns a comma-separated list of available tags.
         :return:
         """
-        return ",".join([t.name for t in self.tags])
+        # return ",".join([t.name for t in self.tags])
+        return [t.name for t in self.tags]
 
     @recipe_tags.setter
     def recipe_tags(self, string):
