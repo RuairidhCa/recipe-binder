@@ -18,16 +18,12 @@ function App() {
     appLoad();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("recipes", JSON.stringify(recipes));
-  }, [recipes]);
-
-  const testProps = {
-    id: "1234",
-    title: "test",
-    url: "test",
-    tags: ["test"],
-  };
+  // const testProps = {
+  //   id: "1234",
+  //   title: "test",
+  //   url: "test",
+  //   tags: ["test"],
+  // };
 
   return (
     <RecipeContext.Provider value={value}>

@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import { RecipeContext } from "App";
 import RecipeForm from "./RecipeForm";
 
-import { Recipe as RecipeType } from "types/recipe";
+import { fetchRecipes } from "../utils/utils";
 
 interface IRecipeCardProps {
   id: string;
@@ -30,14 +30,14 @@ interface IRecipeCardProps {
 }
 
 function RecipeCard({ id, title, url, tags }: IRecipeCardProps) {
-  const { recipes, setRecipes } = useContext(RecipeContext);
+  const { setRecipes } = useContext(RecipeContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  function deleteRecipe(recipeIdToDelete: string) {
-    const filteredRecipes = recipes.filter(
-      (recipe: RecipeType) => recipe.id !== recipeIdToDelete
-    );
-    setRecipes(filteredRecipes);
+  async function deleteRecipe(recipeIdToDelete: string) {
+    await fetch(`/api/recipes/${recipeIdToDelete}`, {
+      method: "DELETE",
+    });
+    setRecipes(await fetchRecipes());
   }
 
   return (

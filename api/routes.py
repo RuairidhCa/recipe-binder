@@ -24,14 +24,22 @@ def get_all_recipes():
 
 
 @app.route("/api/recipes/<recipe_id>", methods=["PUT"])
-def update_recipes(recipe_id):
+def update_recipe(recipe_id):
     data = request.get_json()
-    print(data)
     recipe = Recipe.query.get(recipe_id)
     recipe.title = data["title"]
     recipe.url = data["url"]
     recipe.recipe_tags = ",".join(data["tags"])
 
+    db.session.commit()
+
+    return Response(status=204)
+
+
+@app.route("/api/recipes/<recipe_id>", methods=["DELETE"])
+def delete_recipe(recipe_id):
+    recipe = Recipe.query.get(recipe_id)
+    db.session.delete(recipe)
     db.session.commit()
 
     return Response(status=204)
