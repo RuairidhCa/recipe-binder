@@ -1,4 +1,4 @@
-from api import db
+from api import db, bcrypt
 from sqlalchemy.orm import validates
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -63,3 +63,15 @@ class Tag(db.Model):
             return Tag.query.filter_by(name=name).one()
         except NoResultFound:
             return Tag(name=name)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(32))
+    password_hash = db.Column(db.String(128))
+
+    def hash_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+
+    def verify_password(self, password):
+        return bcrypt.check_password_hash(self.password_hash, password)
