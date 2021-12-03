@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -18,22 +18,11 @@ function App() {
     appLoad();
   }, []);
 
-  // const testProps = {
-  //   id: "1234",
-  //   title: "test",
-  //   url: "test",
-  //   tags: ["test"],
-  // };
-
   return (
     <RecipeContext.Provider value={value}>
       <Router>
         <Routes>
           <Route path="/" element={<Recipes />} />
-          {/* <Route
-            path="/recipes/:recipeId"
-            element={<Recipe {...testProps} />}
-          /> */}
         </Routes>
       </Router>
     </RecipeContext.Provider>

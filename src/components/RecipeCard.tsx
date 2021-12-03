@@ -1,5 +1,3 @@
-import React, { useContext } from "react";
-
 import {
   Box,
   Heading,
@@ -13,14 +11,12 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 
-import { RecipeContext } from "App";
 import RecipeForm from "./RecipeForm";
 
-import { fetchRecipes } from "../utils/utils";
+import useCrud from "hooks/useCrud";
 
 interface IRecipeCardProps {
   id: string;
@@ -30,28 +26,8 @@ interface IRecipeCardProps {
 }
 
 function RecipeCard({ id, title, url, tags }: IRecipeCardProps) {
-  const { setRecipes } = useContext(RecipeContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
-
-  async function deleteRecipe(recipeIdToDelete: string) {
-    try {
-      const response = await fetch(`/api/recipes/${recipeIdToDelete}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        setRecipes(await fetchRecipes());
-      }
-    } catch (error: any) {
-      toast({
-        title: "Failed to delete recipe.",
-        description: "Please try again.",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-    }
-  }
+  const { deleteRecipe } = useCrud();
 
   return (
     <>
@@ -92,11 +68,7 @@ function RecipeCard({ id, title, url, tags }: IRecipeCardProps) {
           <ModalHeader>Edit recipe</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <RecipeForm
-              onClose={onClose}
-              deleteRecipe={deleteRecipe}
-              recipe={{ id, title, url, tags }}
-            />
+            <RecipeForm onClose={onClose} recipe={{ id, title, url, tags }} />
           </ModalBody>
         </ModalContent>
       </Modal>
