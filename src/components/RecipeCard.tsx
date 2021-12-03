@@ -13,9 +13,9 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
 
 import { RecipeContext } from "App";
 import RecipeForm from "./RecipeForm";
@@ -32,32 +32,43 @@ interface IRecipeCardProps {
 function RecipeCard({ id, title, url, tags }: IRecipeCardProps) {
   const { setRecipes } = useContext(RecipeContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   async function deleteRecipe(recipeIdToDelete: string) {
-    await fetch(`/api/recipes/${recipeIdToDelete}`, {
-      method: "DELETE",
-    });
-    setRecipes(await fetchRecipes());
+    try {
+      const response = await fetch(`/api/recipes/${recipeIdToDelete}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setRecipes(await fetchRecipes());
+      }
+    } catch (error: any) {
+      toast({
+        title: "Failed to delete recipe.",
+        description: "Please try again.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   }
 
   return (
     <>
       <Box boxShadow="base" rounded="md">
-        <Link to={`/recipes/${id}`}>
-          <Box m="2">
-            <Heading size="md" mb="3" noOfLines={1}>
-              {title}
-            </Heading>
-            <Text fontSize="sm" color="gray.500" mb="3" noOfLines={2}>
-              {url}
-            </Text>
-            {tags.map((tag, index) => (
-              <Tag key={tag + index} mr="1">
-                {tag}
-              </Tag>
-            ))}
-          </Box>
-        </Link>
+        <Box m="2">
+          <Heading size="md" mb="3" noOfLines={1}>
+            {title}
+          </Heading>
+          <Text fontSize="sm" color="gray.500" mb="3" noOfLines={2}>
+            <a href={url}>{url}</a>
+          </Text>
+          {tags.map((tag, index) => (
+            <Tag key={tag + index} mr="1">
+              {tag}
+            </Tag>
+          ))}
+        </Box>
         <IconButton
           variant="ghost"
           colorScheme="blue"

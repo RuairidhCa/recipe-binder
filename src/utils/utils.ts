@@ -7,6 +7,10 @@ export async function fetchRecipes() {
 export function prepareTags(tags: string) {
   return tags
     .split(/[,\r\n]/)
-    .filter((tag: string) => tag.trim() !== "")
-    .map((tag) => tag.toLowerCase());
+    .map((tag) => tag.toLowerCase().trim())
+    .filter((tag) => tag !== "");
+}
+
+export function prepareUrl(url: string) {
+  return (url.startsWith("http") ? url : `http://${url}`).trim();
 }

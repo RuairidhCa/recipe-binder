@@ -2,28 +2,41 @@ import React, { useContext } from "react";
 
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Button, Textarea } from "@chakra-ui/react";
+import { Button, Textarea, useToast } from "@chakra-ui/react";
 import { Recipe } from "../types/recipe";
 import { RecipeContext } from "App";
-import { fetchRecipes, prepareTags } from "../utils/utils";
+import { fetchRecipes, prepareTags, prepareUrl } from "../utils/utils";
 interface IRecipeFormProps {
   onClose: () => void;
   recipe?: Recipe;
 }
+
 function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
   const { setRecipes } = useContext(RecipeContext);
+  const toast = useToast();
 
   async function saveOrEditRecipe(recipe: Recipe) {
-    const path = recipe.id ? `/${recipe.id}` : "";
-    await fetch(`/api/recipes${path}`, {
-      method: recipe.id ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(recipe),
-    });
-
-    setRecipes(await fetchRecipes());
+    try {
+      const path = recipe.id ? `/${recipe.id}` : "";
+      const response = await fetch(`/api/recipes${path}`, {
+        method: recipe.id ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(recipe),
+      });
+      if (response.ok) {
+        setRecipes(await fetchRecipes());
+      }
+    } catch (error: any) {
+      toast({
+        title: "Failed to save recipe.",
+        description: "Please try again.",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   }
   function handleSubmit(event: any) {
     event.preventDefault();
@@ -32,8 +45,8 @@ function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
 
     saveOrEditRecipe({
       id: recipe?.id,
-      title: title.value,
-      url: url.value,
+      title: title.value.trim(),
+      url: prepareUrl(url.value),
       tags: prepareTags(tags.value),
     });
     onClose();

@@ -7,8 +7,8 @@ from api.models import Recipe, Tag
 def create_recipe():
     data = request.get_json()
     new_recipe = Recipe(
-        title=data["title"],
-        url=data["url"],
+        title=data["title"].strip(),
+        url=data["url"].strip(),
         recipe_tags=",".join(data["tags"]),
     )
     db.session.add(new_recipe)
@@ -27,8 +27,8 @@ def get_all_recipes():
 def update_recipe(recipe_id):
     data = request.get_json()
     recipe = Recipe.query.get(recipe_id)
-    recipe.title = data["title"]
-    recipe.url = data["url"]
+    recipe.title = data["title"].strip()
+    recipe.url = data["url"].strip()
     recipe.recipe_tags = ",".join(data["tags"])
 
     db.session.commit()
