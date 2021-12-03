@@ -74,9 +74,9 @@ function Recipes() {
           {recipes
             .filter((recipe: Recipe) => {
               return (
-                recipe.title.includes(searchInput) ||
+                recipe.title.includes(searchInput.toLowerCase()) ||
                 recipe.tags.some((tag) => {
-                  return tag.includes(searchInput);
+                  return tag.includes(searchInput.toLowerCase());
                 })
               );
             })
