@@ -2,16 +2,17 @@ import React, { useContext } from "react";
 
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { Input } from "@chakra-ui/input";
-import { Button, Textarea, useToast } from "@chakra-ui/react";
+import { Button, ButtonGroup, Textarea, useToast } from "@chakra-ui/react";
 import { Recipe } from "../types/recipe";
 import { RecipeContext } from "App";
 import { fetchRecipes, prepareTags, prepareUrl } from "../utils/utils";
 interface IRecipeFormProps {
   onClose: () => void;
+  deleteRecipe?: (recipeIdToDelete: string) => Promise<void>;
   recipe?: Recipe;
 }
 
-function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
+function RecipeForm({ onClose, deleteRecipe, recipe }: IRecipeFormProps) {
   const { setRecipes } = useContext(RecipeContext);
   const toast = useToast();
 
@@ -38,6 +39,7 @@ function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
       });
     }
   }
+
   function handleSubmit(event: any) {
     event.preventDefault();
 
@@ -52,6 +54,11 @@ function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
     onClose();
   }
 
+  function handleDeleteClick() {
+    if (deleteRecipe && recipe?.id) {
+      deleteRecipe(recipe.id);
+    }
+  }
   return (
     <form onSubmit={handleSubmit}>
       <FormControl id="title" isRequired>
@@ -69,10 +76,16 @@ function RecipeForm({ onClose, recipe }: IRecipeFormProps) {
         <FormLabel>Tags</FormLabel>
         <Textarea defaultValue={recipe?.tags.join("\r\n")} />
       </FormControl>
-
-      <Button colorScheme="blue" type="submit" mt="3">
-        Save
-      </Button>
+      <ButtonGroup>
+        <Button colorScheme="blue" type="submit" mt="3">
+          Save
+        </Button>
+        {deleteRecipe && recipe?.id ? (
+          <Button colorScheme="red" onClick={handleDeleteClick} mt="3">
+            Delete
+          </Button>
+        ) : null}
+      </ButtonGroup>
     </form>
   );
 }

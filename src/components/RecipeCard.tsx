@@ -92,7 +92,11 @@ function RecipeCard({ id, title, url, tags }: IRecipeCardProps) {
           <ModalHeader>Edit recipe</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <RecipeForm onClose={onClose} recipe={{ id, title, url, tags }} />
+            <RecipeForm
+              onClose={onClose}
+              deleteRecipe={deleteRecipe}
+              recipe={{ id, title, url, tags }}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>
