@@ -1,18 +1,23 @@
 from api import app, db
 from flask import jsonify, request, Response
 from api.models import Recipe, User
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import (
+    create_access_token,
+    jwt_required,
+    get_jwt_identity,
+)
 
 
 @app.route("/api/recipes", methods=["POST"])
+@jwt_required()
 def create_recipe():
+    current_user = User.query.get(get_jwt_identity())
     data = request.get_json()
     new_recipe = Recipe(
         title=data["title"].strip(),
         url=data["url"].strip(),
         recipe_tags=",".join(data["tags"]),
+        user_id=current_user.id,
     )
     db.session.add(new_recipe)
     db.session.commit()
@@ -27,6 +32,7 @@ def get_all_recipes():
 
 
 @app.route("/api/recipes/<recipe_id>", methods=["PUT"])
+@jwt_required()
 def update_recipe(recipe_id):
     data = request.get_json()
     recipe = Recipe.query.get(recipe_id)
@@ -40,6 +46,7 @@ def update_recipe(recipe_id):
 
 
 @app.route("/api/recipes/<recipe_id>", methods=["DELETE"])
+@jwt_required()
 def delete_recipe(recipe_id):
     recipe = Recipe.query.get(recipe_id)
     db.session.delete(recipe)
@@ -52,12 +59,16 @@ def delete_recipe(recipe_id):
 def register():
     username = request.json.get("username")
     password = request.json.get("password")
+
     user = User(username=username)
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()
+
+    access_token = create_access_token(identity=user.id)
+
     return (
-        jsonify({"username": user.username}),
+        jsonify({"username": user.username, "id": user.id, "token": access_token}),
         201,
     )
 
@@ -67,16 +78,16 @@ def login():
     username = request.json.get("username")
     password = request.json.get("password")
     user = User.query.filter_by(username=username).first()
+
     if not user or not user.verify_password(password):
-        return jsonify({"message": "FAIL"}), 400
+        return jsonify({"message": "Username or password incorrect"}), 400
 
     access_token = create_access_token(identity=user.id)
-    return jsonify(access_token=access_token)
+    return jsonify({"username": user.username, "id": user.id, "token": access_token})
 
 
 @app.route("/api/protected", methods=["GET"])
 @jwt_required()
 def protected():
-    # Access the identity of the current user with get_jwt_identity
     current_user = User.query.get(get_jwt_identity())
     return jsonify(logged_in_as=current_user.username), 200

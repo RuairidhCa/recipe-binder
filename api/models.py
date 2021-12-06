@@ -13,7 +13,9 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text)
     url = db.Column(db.Text)
-    tags = db.relationship("Tag", secondary=TAGS, backref="recipes")
+    tags = db.relationship("Tag", secondary=TAGS, backref="tagged_recipes")
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("User", back_populates="recipes")
 
     def to_json(self):
         return {
@@ -21,23 +23,21 @@ class Recipe(db.Model):
             "title": self.title,
             "url": self.url,
             "tags": self.recipe_tags,
+            "user_id": self.user_id,
         }
 
     @property
     def recipe_tags(self):
         """
-        Returns a comma-separated list of available tags.
+        Returns a list of available tags.
         :return:
         """
-        # return ",".join([t.name for t in self.tags])
         return [t.name for t in self.tags]
 
     @recipe_tags.setter
     def recipe_tags(self, string):
         if string:
-
             self.tags = [Tag.get_or_create(name) for name in string.split(",")]
-
         else:
             self.tags = []
 
@@ -69,6 +69,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32))
     password_hash = db.Column(db.String(128))
+    recipes = db.relationship("Recipe", lazy="dynamic", back_populates="user")
 
     def hash_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
