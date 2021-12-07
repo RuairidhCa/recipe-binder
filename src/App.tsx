@@ -1,32 +1,11 @@
-import { createContext, useEffect, useState } from "react";
+import * as React from "react";
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-import Recipes from "pages/Recipes";
-import { fetchRecipes } from "utils/utils";
-
-export const RecipeContext = createContext<any>(null);
-
+import AuthenticatedApp from "AuthenticatedApp";
+import UnauthenticatedApp from "UnauthenticatedApp";
+import { useAuth } from "./context/authContext";
 function App() {
-  const [recipes, setRecipes] = useState<any>([]);
-
-  const value = { recipes, setRecipes };
-  useEffect(() => {
-    async function appLoad() {
-      setRecipes(await fetchRecipes());
-    }
-    appLoad();
-  }, []);
-
-  return (
-    <RecipeContext.Provider value={value}>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Recipes />} />
-        </Routes>
-      </Router>
-    </RecipeContext.Provider>
-  );
+  const { user } = useAuth();
+  return user ? <AuthenticatedApp /> : <UnauthenticatedApp />;
 }
 
 export default App;

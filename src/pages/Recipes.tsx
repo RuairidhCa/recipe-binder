@@ -20,10 +20,12 @@ import { AddIcon, SearchIcon } from "@chakra-ui/icons";
 
 import RecipeCard from "components/RecipeCard";
 import RecipeForm from "components/RecipeForm";
-import { RecipeContext } from "App";
+import { RecipeContext } from "AuthenticatedApp";
 import { Recipe } from "types/recipe";
+import { useAuth } from "../context/authContext";
 function Recipes() {
   const { recipes } = useContext(RecipeContext);
+  const { logout } = useAuth();
 
   const [searchInput, setSearchInput] = useState<string>("");
 
@@ -45,6 +47,17 @@ function Recipes() {
         bg="gray.100"
         mb="5"
       >
+        <Box display="flex" justifyContent="flex-end" width="100vw">
+          <Button
+            size="sm"
+            onClick={logout}
+            colorScheme="blue"
+            alignSelf="left"
+            mx="6"
+          >
+            Logout
+          </Button>
+        </Box>
         <InputGroup spacing="3" maxW={["90vw", "70vw", "50vw"]}>
           <Input
             size="md"

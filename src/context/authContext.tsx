@@ -2,7 +2,10 @@ import * as React from "react";
 
 interface IAuthContext {
   user: { username: string; id: number; token: string } | null;
-  login: () => void;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  error: { message: string };
+  login: ({ username, password }: { [key: string]: string }) => void;
   logout: () => void;
 }
 const AuthContext = React.createContext<IAuthContext | null>(null);
@@ -12,7 +15,8 @@ function AuthProvider(props: React.PropsWithChildren<{}>) {
   type State = {
     isAuthenticated: boolean;
     isLoading: boolean;
-    user: { username: string; id: number; token: string } | any;
+    user: { username: string; id: number; token: string } | null;
+    error: any;
   };
 
   type Action = {
@@ -20,10 +24,12 @@ function AuthProvider(props: React.PropsWithChildren<{}>) {
     payload?: any;
   };
 
+  const storedUser = localStorage.getItem("user") || null;
   const initialState: State = {
     isAuthenticated: false,
     isLoading: false,
-    user: localStorage.getItem("user"),
+    user: storedUser ? JSON.parse(storedUser) : null,
+    error: null,
   };
 
   function reducer(state: State, action: Action) {
@@ -32,6 +38,7 @@ function AuthProvider(props: React.PropsWithChildren<{}>) {
         return {
           ...state,
           isLoading: true,
+          error: null,
         };
       case "LOGIN_SUCCESS":
         localStorage.setItem("user", JSON.stringify(action.payload));
@@ -40,38 +47,62 @@ function AuthProvider(props: React.PropsWithChildren<{}>) {
           isLoading: false,
           isAuthenticated: true,
           user: action.payload,
+          error: null,
+        };
+      case "LOGIN_FAIL":
+        return {
+          ...state,
+          isLoading: false,
+          isAuthenticated: false,
+          user: null,
+          error: action.payload,
+        };
+      case "LOGOUT":
+        localStorage.removeItem("user");
+        return {
+          ...state,
+          isLoading: false,
+          isAuthenticated: false,
+          user: null,
+          error: null,
         };
       default:
         throw new Error();
     }
   }
   const [state, dispatch] = React.useReducer(reducer, initialState);
-  const { user, isLoading, isAuthenticated } = state;
+  const { user, isLoading, isAuthenticated, error } = state;
 
-  const login = () => {
-    console.log("login");
+  const login = async ({ username, password }: { [key: string]: string }) => {
     dispatch({ type: "LOGIN_REQUEST" });
-    fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: "test2", password: "test2" }),
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
 
-        dispatch({ type: "LOGIN_SUCCESS", payload: data });
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: username, password: password }),
       });
+      const data = await response.json();
+      if (response.ok) {
+        dispatch({ type: "LOGIN_SUCCESS", payload: data });
+      } else {
+        console.log("login fail");
+        dispatch({ type: "LOGIN_FAIL", payload: data });
+      }
+    } catch (error) {
+      console.error("FAIL");
+      console.error(error);
+
+      dispatch({ type: "LOGIN_FAIL" });
+    }
   };
 
   const logout = () => {
-    console.log("logout");
+    dispatch({ type: "LOGOUT" });
   };
-  const value = { user, isLoading, isAuthenticated, login, logout };
+  const value = { user, isLoading, isAuthenticated, error, login, logout };
   return <AuthContext.Provider value={value} {...props} />;
 }
 

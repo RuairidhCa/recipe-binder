@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { EditIcon } from "@chakra-ui/icons";
 import { Recipe as RecipeType } from "../types/recipe";
-import { RecipeContext } from "App";
+import { RecipeContext } from "AuthenticatedApp";
 import { Link, useParams } from "react-router-dom";
 
 import ImgPlaceholderSvg from "../assets/img_placeholder.svg";

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useToast } from "@chakra-ui/react";
-import { RecipeContext } from "App";
+import { RecipeContext } from "AuthenticatedApp";
 
 import { Recipe } from "../types/recipe";
 
