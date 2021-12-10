@@ -1,4 +1,3 @@
-from threading import current_thread
 from api import app, db
 from flask import jsonify, request, Response
 from api.models import Recipe, User
@@ -99,7 +98,7 @@ def login():
     if not user or not user.verify_password(password):
         return jsonify({"message": "Username or password incorrect"}), 400
 
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=user.id, expires_delta=False)
     return jsonify({"username": user.username, "id": user.id, "token": access_token})
 
 

@@ -17,17 +17,27 @@ import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import RecipeForm from "./RecipeForm";
 
 import useCrud from "hooks/useCrud";
+import { useAuth } from "context/authContext";
 
 interface IRecipeCardProps {
   id: string;
   title: string;
   url: string;
   tags: string[];
+  user_id: number;
 }
 
-function RecipeCard({ id, title, url, tags }: IRecipeCardProps) {
+function RecipeCard({
+  id,
+  title,
+  url,
+  tags,
+  user_id: recipeOwnerId,
+}: IRecipeCardProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { deleteRecipe } = useCrud();
+
+  const { user } = useAuth();
 
   return (
     <>
@@ -45,22 +55,26 @@ function RecipeCard({ id, title, url, tags }: IRecipeCardProps) {
             </Tag>
           ))}
         </Box>
-        <IconButton
-          variant="ghost"
-          colorScheme="blue"
-          aria-label="Edit recipe"
-          icon={<EditIcon />}
-          onClick={onOpen}
-        />
-        <IconButton
-          variant="ghost"
-          colorScheme="red"
-          aria-label="Delete recipe"
-          icon={<DeleteIcon />}
-          onClick={() => {
-            deleteRecipe(id);
-          }}
-        />
+        {recipeOwnerId === user?.id && (
+          <>
+            <IconButton
+              variant="ghost"
+              colorScheme="blue"
+              aria-label="Edit recipe"
+              icon={<EditIcon />}
+              onClick={onOpen}
+            />
+            <IconButton
+              variant="ghost"
+              colorScheme="red"
+              aria-label="Delete recipe"
+              icon={<DeleteIcon />}
+              onClick={() => {
+                deleteRecipe(id);
+              }}
+            />
+          </>
+        )}
       </Box>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

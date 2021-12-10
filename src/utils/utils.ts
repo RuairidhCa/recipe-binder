@@ -4,13 +4,17 @@ export async function fetchRecipes() {
   return data.data;
 }
 
-export function prepareTags(tags: string) {
-  return tags
-    .split(/[,\r\n]/)
-    .map((tag) => tag.toLowerCase().trim())
-    .filter((tag) => tag !== "");
+export function prepareTags(tags: string): string[] {
+  return Array.from(
+    new Set(
+      tags
+        .split(/[,\r\n]/)
+        .map((tag) => tag.toLowerCase().trim())
+        .filter((tag) => tag !== "")
+    )
+  );
 }
 
-export function prepareUrl(url: string) {
+export function prepareUrl(url: string): string {
   return (url.startsWith("http") ? url : `http://${url}`).trim();
 }

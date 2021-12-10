@@ -5,17 +5,20 @@ import { RecipeContext } from "AuthenticatedApp";
 import { Recipe } from "../types/recipe";
 
 import { fetchRecipes } from "utils/utils";
+import { useAuth } from "context/authContext";
 export default function useCrud() {
   const { setRecipes } = useContext(RecipeContext);
+  const { user } = useAuth();
   const toast = useToast();
 
   async function saveOrEditRecipe(recipe: Recipe) {
     try {
-      const path = recipe.id ? `/${recipe.id}` : "";
-      const response = await fetch(`/api/recipes${path}`, {
+      const url = recipe.id ? `/api/recipes/${recipe.id}` : "/api/recipes";
+      const response = await fetch(`${url}`, {
         method: recipe.id ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: user ? `Bearer ${user?.token}` : "",
         },
         body: JSON.stringify(recipe),
       });
@@ -37,6 +40,9 @@ export default function useCrud() {
     try {
       const response = await fetch(`/api/recipes/${recipeIdToDelete}`, {
         method: "DELETE",
+        headers: {
+          Authorization: user ? `Bearer ${user?.token}` : "",
+        },
       });
       if (response.ok) {
         setRecipes(await fetchRecipes());
