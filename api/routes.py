@@ -1,3 +1,4 @@
+from threading import current_thread
 from api import app, db
 from flask import jsonify, request, Response
 from api.models import Recipe, User
@@ -6,6 +7,20 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
+from functools import wraps
+
+
+def owner_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        recipe_id = kwargs["recipe_id"]
+        current_user_id = get_jwt_identity()
+        recipe = Recipe.query.get(recipe_id)
+        if current_user_id != recipe.user_id:
+            return jsonify(message="Not auth"), 401
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 @app.route("/api/recipes", methods=["POST"])
@@ -33,6 +48,7 @@ def get_all_recipes():
 
 @app.route("/api/recipes/<recipe_id>", methods=["PUT"])
 @jwt_required()
+@owner_required
 def update_recipe(recipe_id):
     data = request.get_json()
     recipe = Recipe.query.get(recipe_id)
@@ -47,6 +63,7 @@ def update_recipe(recipe_id):
 
 @app.route("/api/recipes/<recipe_id>", methods=["DELETE"])
 @jwt_required()
+@owner_required
 def delete_recipe(recipe_id):
     recipe = Recipe.query.get(recipe_id)
     db.session.delete(recipe)
