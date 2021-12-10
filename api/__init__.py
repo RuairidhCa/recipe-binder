@@ -35,4 +35,5 @@ migrate = Migrate(app, db, render_as_batch=True)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
-from api import routes, models
+from api.models import models
+from api.routes import routes
