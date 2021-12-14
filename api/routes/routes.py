@@ -15,6 +15,8 @@ def owner_required(f):
         recipe_id = kwargs["recipe_id"]
         current_user_id = get_jwt_identity()
         recipe = Recipe.query.get(recipe_id)
+        if recipe == None:
+            return jsonify(message="Recipe does not exist"), 404
         if current_user_id != recipe.user_id:
             return jsonify(message="Not auth"), 401
         return f(*args, **kwargs)
@@ -75,6 +77,14 @@ def delete_recipe(recipe_id):
 def register():
     username = request.json.get("username")
     password = request.json.get("password")
+
+    user_exists = User.query.filter_by(username=username).first()
+
+    if user_exists:
+        return (
+            jsonify({"message": "A user with that username already exists."}),
+            409,
+        )
 
     user = User(username=username)
     user.hash_password(password)
