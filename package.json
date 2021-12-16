@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@types/uuid": "^8.3.3",
-    "@types/validator": "^13.7.0"
-  },
-  "proxy": "http://localhost:5000"
+    "@types/validator": "^13.7.0",
+    "http-proxy-middleware": "^2.0.1"
+  }
 }

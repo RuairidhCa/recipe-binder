@@ -77,13 +77,16 @@ function AuthProvider(props: React.PropsWithChildren<{}>) {
     dispatch({ type: "LOGIN_REQUEST" });
 
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username: username, password: password }),
-      });
+      const response = await fetch(
+        process.env.REACT_APP_API_URL + "api/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username: username, password: password }),
+        }
+      );
       const data = await response.json();
       if (response.ok) {
         dispatch({ type: "LOGIN_SUCCESS", payload: data });

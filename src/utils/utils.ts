@@ -1,5 +1,5 @@
 export async function fetchRecipes() {
-  const response = await fetch("api/recipes");
+  const response = await fetch(process.env.REACT_APP_API_URL + "/api/recipes");
   const data = await response.json();
   return data.data;
 }

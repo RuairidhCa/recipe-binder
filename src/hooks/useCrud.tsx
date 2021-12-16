@@ -13,7 +13,9 @@ export default function useCrud() {
 
   async function saveOrEditRecipe(recipe: Recipe) {
     try {
-      const url = recipe.id ? `/api/recipes/${recipe.id}` : "/api/recipes";
+      const url = recipe.id
+        ? `${process.env.REACT_APP_API_URL}/api/recipes/${recipe.id}`
+        : `${process.env.REACT_APP_API_URL}/api/recipes`;
       const response = await fetch(`${url}`, {
         method: recipe.id ? "PUT" : "POST",
         headers: {
@@ -38,12 +40,15 @@ export default function useCrud() {
 
   async function deleteRecipe(recipeIdToDelete: string) {
     try {
-      const response = await fetch(`/api/recipes/${recipeIdToDelete}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: user ? `Bearer ${user?.token}` : "",
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/recipes/${recipeIdToDelete}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: user ? `Bearer ${user?.token}` : "",
+          },
+        }
+      );
       if (response.ok) {
         setRecipes(await fetchRecipes());
       }
