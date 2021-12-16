@@ -78,7 +78,7 @@ function AuthProvider(props: React.PropsWithChildren<{}>) {
 
     try {
       const response = await fetch(
-        process.env.REACT_APP_API_URL + "api/login",
+        process.env.REACT_APP_API_URL + "/api/login",
         {
           method: "POST",
           headers: {
